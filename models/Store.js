@@ -62,6 +62,12 @@ storeSchema.pre('save', async function(next) {
   // TODO: Make slugs more unique. In case two stores have the same name
 });
 
+//Define our indexes
+storeSchema.index({
+  name: 'text',
+  description: 'text'
+});
+
 storeSchema.statics.getTagsList = function() {
   return this.aggregate([
     { $unwind: '$tags' },

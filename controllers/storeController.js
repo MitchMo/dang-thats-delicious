@@ -4,6 +4,8 @@ const multer = require('multer');
 const jimp = require('jimp');
 const uuid = require('uuid');
 
+//may need to consider adding a library that will strip away any HTML that was input into the store object
+
 const multerOptions = {
   storage: multer.memoryStorage(),
   fileFilter: function(req, file, next) {
@@ -102,4 +104,24 @@ exports.getStoresByTag = async (req, res) => {
   const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
 
   res.render('tag', { title: 'Tags' , tags, tag, stores});
+};
+
+exports.searchStores = async (req, res) => {
+  const stores = await Store
+  //Find stores that match
+  .find({
+    $text: {
+      $search: req.query.q
+    }
+  }, {
+    score: { $meta: 'textScore' }
+  })
+  //Sort them based on how much they match the search
+  .sort({
+    score: { $meta: 'textScore' }
+  })
+  //limit to only 5 results
+  .limit(5);
+
+  res.json(stores);
 };
