@@ -14,10 +14,12 @@ router.get('/add',
   storeController.addStore);
 router.post('/add',
   storeController.upload,
+  storeController.removeHTML,
   catchErrors(storeController.resize),
   catchErrors(storeController.createStore));
 router.post('/add/:id',
   storeController.upload,
+  storeController.removeHTML,
   catchErrors(storeController.resize),
   catchErrors(storeController.updateStore));
 router.get('/stores/:id/edit',

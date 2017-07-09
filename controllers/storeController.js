@@ -3,6 +3,7 @@ const Store = mongoose.model('Store');
 const multer = require('multer');
 const jimp = require('jimp');
 const uuid = require('uuid');
+const striptags = require('striptags');
 
 //may need to consider adding a library that will strip away any HTML that was input into the store object
 
@@ -46,9 +47,16 @@ exports.resize = async (req, res, next) => {
   next();
 };
 
+exports.removeHTML = async (req, res, next) => {
+  req.body.name = striptags(req.body.name);
+  req.body.description = striptags(req.body.description);
+  req.body.slug = striptags(req.body.slug);
+  next();
+};
+
 exports.createStore = async (req, res) => {
   req.body.author = req.user._id;
-  const store = await (new Store(req.body)).save();
+  const store = await (new Store(req.body).save());
   req.flash('success', `Successfully created ${store.name}. Care to leave a review?`);
   res.redirect(`/store/${store.slug}`);
 };
